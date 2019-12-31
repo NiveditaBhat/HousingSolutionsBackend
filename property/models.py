@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from common.models import Address, Image
 
 
-def validate_availabilityl(value):
+def validate_availability(value):
     today = date.today()
     if value < today:
         raise ValidationError(
