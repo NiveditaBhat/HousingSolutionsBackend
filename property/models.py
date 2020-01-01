@@ -2,7 +2,6 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from datetime import date
 from django.core.exceptions import ValidationError
-from common.models import Address, Image
 
 
 def validate_availability(value):
@@ -10,18 +9,6 @@ def validate_availability(value):
     if value < today:
         raise ValidationError(
             'Property Availability cannot be set to the past date.')
-
-
-class PropertyPrice(models.Model):
-    rent = models.DecimalField(
-        help_text="Property rent", max_digits=6, decimal_places=2)
-    deposit = models.DecimalField(
-        help_text="Property deposit", max_digits=6, decimal_places=2)
-
-
-class PropertyImages(models.Model):
-    image = models.ForeignKey(Image, related_name='+',
-                              on_delete=models.CASCADE)
 
 
 class Property(models.Model):
@@ -45,24 +32,27 @@ class Property(models.Model):
         choices=(
             ("apartment", "Apartment"),
             ("room", "Room"),
-            ("bungalow", "bungalow"),
+            ("bungalow", "Bungalow"),
             ("house", "House")
-        )
+        ),
+        default="apartment"
     )
     interior = models.CharField(
         max_length=20,
-        help_text="Property Type",
+        help_text="Property Interior",
         choices=(
             ("unfurnished", "Unfurnished"),
             ("semi-furnished", "Semi-furnished"),
-            ("furnished", "furnished")
-        )
+            ("furnished", "Furnished")
+        ),
+        default='unfurnished'
     )
-    price = models.OneToOneField(
-        PropertyPrice, related_name="+", help_text="Property Price", on_delete=models.CASCADE)
 
-    address = models.OneToOneField(
-        Address, related_name="+", help_text="Property Address", on_delete=models.CASCADE)
 
-    property_images = models.OneToOneField(
-        PropertyImages, related_name="+", help_text="Property Images", on_delete=models.CASCADE)
+class PropertyPrice(models.Model):
+    property = models.OneToOneField(
+        Property, related_name="property_price", help_text="Property", on_delete=models.CASCADE, default=100)
+    rent = models.DecimalField(
+        help_text="Property rent (in €)", max_digits=6, decimal_places=2, default=100.00)
+    deposit = models.DecimalField(
+        help_text="Property deposit (in €)", max_digits=6, decimal_places=2, default=100.00)
