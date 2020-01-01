@@ -1,11 +1,14 @@
 from django.db import models
 from property.models import Property
+from customer.models import Customer
 from django.core.exceptions import ValidationError
 from django_countries.fields import CountryField
 from django_countries import Countries
 
 
 class Name(models.Model):
+    customer = models.OneToOneField(
+        Customer, related_name="Name", help_text="Customer", on_delete=models.CASCADE, null=True)
     first_name = models.CharField(
         max_length=20,
         help_text="First Name"
@@ -30,7 +33,9 @@ class EUCountries(Countries):
 
 class Address(models.Model):
     property = models.OneToOneField(
-        Property, related_name="address", help_text="Property", on_delete=models.CASCADE, default=None)
+        Property, related_name="address", help_text="Property", on_delete=models.CASCADE, null=True)
+    customer = models.OneToOneField(
+        Customer, related_name="address", help_text="Customer", on_delete=models.CASCADE, null=True)
     street = models.CharField(help_text="Street", max_length=128)
     city = models.CharField(
         help_text="City", max_length=15, default="Eindhoven")
