@@ -11,6 +11,7 @@ autopep8 = "*"
 django = "*"
 psycopg2-binary = "*"
 django-countries = "*"
+django-phone-field = "*"
 
 [requires]
 python_version = "3.7"

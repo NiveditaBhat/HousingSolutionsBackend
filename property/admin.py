@@ -7,6 +7,7 @@ from django.utils.html import mark_safe
 
 class AddressInline(admin.StackedInline):
     model = Address
+    fields = ['street', 'city', 'country', 'zip_code']
 
 
 class PropertyPriceInline(admin.StackedInline):
