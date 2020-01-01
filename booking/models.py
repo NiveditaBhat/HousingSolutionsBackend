@@ -10,7 +10,7 @@ class Booking(models.Model):
         Customer, related_name="booking", help_text="Customer", on_delete=models.CASCADE, null=True)
 
     class Meta:
-        verbose_name = 'Booking'
+        verbose_name_plural = 'Bookings for properties'
 
     def __str__(self):
         return "Booking {id} : {name}".format(name=self.property.name, id=self.id)

@@ -7,7 +7,7 @@ class Customer(models.Model):
     phone = PhoneField(blank=True, null=True, help_text='Phone number')
 
     class Meta:
-        verbose_name = 'Customers registered under HousingSolutions'
+        verbose_name_plural = 'Customers registered under HousingSolutions'
 
     def __str__(self):
         return "Customer {id}".format(id=self.id)
