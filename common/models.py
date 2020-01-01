@@ -1,6 +1,6 @@
 from django.db import models
-
-# Create your models here.
+from property.models import Property
+from django.core.exceptions import ValidationError
 
 
 class Name(models.Model):
@@ -21,13 +21,30 @@ class Name(models.Model):
 
 
 class Address(models.Model):
-    street = models.CharField("Street", max_length=128)
-    locality = models.CharField("Locality", max_length=128)
-    city = models.CharField("City", max_length=15, default="Eindhoven")
-    country = models.CharField("Country", max_length=15, default="Netherlands")
-    zip_code = models.CharField("Postal code", max_length=12, default="5611KT")
+    property = models.OneToOneField(
+        Property, related_name="address", help_text="Property", on_delete=models.CASCADE, default=None)
+    street = models.CharField(help_text="Street", max_length=128)
+    locality = models.CharField(help_text="Locality", max_length=128)
+    city = models.CharField(
+        help_text="City", max_length=15, default="Eindhoven")
+    country = models.CharField(
+        help_text="Country", max_length=15, default="Netherlands")
+    zip_code = models.CharField(
+        help_text="Postal code", max_length=12, default="5611KT")
 
 
 class Image(models.Model):
-    url = models.URLField("Image url", max_length=200)
-    alt = models.CharField("Image description ", max_length=20)
+    property = models.ForeignKey(
+        Property, related_name="Image", help_text="Property Images", on_delete=models.CASCADE, null=True)
+
+    url = models.URLField("url", max_length=200)
+    alt = models.CharField("alt", max_length=20)
+
+    class Meta:
+        verbose_name = 'Property Image'
+
+    def clean(self):
+        total_images = Image.objects.filter(property=self.property).count()
+        if(total_images > 10):
+            raise ValidationError(
+                "The total number of images for a property cannot exceed 10")
