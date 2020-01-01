@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'phone_field',
     'common',
     'property',
-    'customer'
+    'customer',
+    'booking'
 ]
 
 MIDDLEWARE = [
