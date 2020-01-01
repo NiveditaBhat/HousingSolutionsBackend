@@ -1,6 +1,8 @@
 from django.db import models
 from property.models import Property
 from django.core.exceptions import ValidationError
+from django_countries.fields import CountryField
+from django_countries import Countries
 
 
 class Name(models.Model):
@@ -20,6 +22,12 @@ class Name(models.Model):
     )
 
 
+class EUCountries(Countries):
+    only = [
+        'AT', 'BE', 'BG', 'CY', 'CZ', 'DK', 'EE', 'ES', 'FI', 'GR', 'HR', 'FR', 'DE', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PT', 'RO', 'SE', 'SI', 'SK'
+    ]
+
+
 class Address(models.Model):
     property = models.OneToOneField(
         Property, related_name="address", help_text="Property", on_delete=models.CASCADE, default=None)
@@ -27,8 +35,8 @@ class Address(models.Model):
     locality = models.CharField(help_text="Locality", max_length=128)
     city = models.CharField(
         help_text="City", max_length=15, default="Eindhoven")
-    country = models.CharField(
-        help_text="Country", max_length=15, default="Netherlands")
+    country = CountryField(countries=EUCountries,
+                           help_text="Countries in EU Union", default='NL')
     zip_code = models.CharField(
         help_text="Postal code", max_length=12, default="5611KT")
 
