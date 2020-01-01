@@ -6,5 +6,8 @@ class Customer(models.Model):
     email = models.EmailField(max_length=254, help_text='Email Id')
     phone = PhoneField(blank=True, null=True, help_text='Phone number')
 
+    class Meta:
+        verbose_name = 'Customers registered under HousingSolutions'
+
     def __str__(self):
-        return self.name
+        return "Customer {id}".format(id=self.id)
