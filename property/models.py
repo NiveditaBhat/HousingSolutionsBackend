@@ -25,7 +25,8 @@ class Property(models.Model):
     bathroom = models.PositiveIntegerField(
         help_text="No. of bathrooms", validators=[MinValueValidator(1)])
     availability = models.DateField(
-        help_text="Date from which the property is available for rent", validators=[validate_availability])
+        help_text="Date from which the property is available for rent",
+        validators=[validate_availability])
     catergory = models.CharField(
         max_length=20,
         help_text="Property Type",
@@ -57,8 +58,11 @@ class Property(models.Model):
 
 class PropertyPrice(models.Model):
     property = models.OneToOneField(
-        Property, related_name="property_price", help_text="Property", on_delete=models.CASCADE, default=None)
+        Property, related_name="property_price", help_text="Property",
+        on_delete=models.CASCADE, default=None)
     rent = models.DecimalField(
-        help_text="Property rent (in €)", max_digits=6, decimal_places=2, default=00.00)
+        help_text="Property rent (in €)", max_digits=6, decimal_places=2,
+        default=00.00)
     deposit = models.DecimalField(
-        help_text="Property deposit (in €)", max_digits=6, decimal_places=2, default=00.00)
+        help_text="Property deposit (in €)", max_digits=6, decimal_places=2,
+        default=00.00)

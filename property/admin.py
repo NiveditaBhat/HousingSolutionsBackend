@@ -1,7 +1,6 @@
 from django.contrib import admin
 from common.models import Address, Image
 from property.models import Property, PropertyPrice
-from django.utils.html import escape
 from django.utils.html import mark_safe
 
 

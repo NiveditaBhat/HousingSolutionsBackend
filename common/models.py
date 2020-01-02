@@ -8,7 +8,8 @@ from django_countries import Countries
 
 class Name(models.Model):
     customer = models.OneToOneField(
-        Customer, related_name="Name", help_text="Customer", on_delete=models.CASCADE, null=True)
+        Customer, related_name="Name", help_text="Customer",
+        on_delete=models.CASCADE, null=True)
     first_name = models.CharField(
         max_length=20,
         help_text="First Name"
@@ -27,15 +28,19 @@ class Name(models.Model):
 
 class EUCountries(Countries):
     only = [
-        'AT', 'BE', 'BG', 'CY', 'CZ', 'DK', 'EE', 'ES', 'FI', 'GR', 'HR', 'FR', 'DE', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PT', 'RO', 'SE', 'SI', 'SK'
+        'AT', 'BE', 'BG', 'CY', 'CZ', 'DK', 'EE', 'ES', 'FI', 'GR', 'HR',
+        'FR', 'DE', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PT',
+        'RO', 'SE', 'SI', 'SK'
     ]
 
 
 class Address(models.Model):
     property = models.OneToOneField(
-        Property, related_name="address", help_text="Property", on_delete=models.CASCADE, null=True)
+        Property, related_name="address", help_text="Property",
+        on_delete=models.CASCADE, null=True)
     customer = models.OneToOneField(
-        Customer, related_name="address", help_text="Customer", on_delete=models.CASCADE, null=True)
+        Customer, related_name="address", help_text="Customer",
+        on_delete=models.CASCADE, null=True)
     street = models.CharField(help_text="Street", max_length=128)
     city = models.CharField(
         help_text="City", max_length=15, default="Eindhoven")
@@ -50,7 +55,8 @@ class Address(models.Model):
 
 class Image(models.Model):
     property = models.ForeignKey(
-        Property, related_name="Image", help_text="Property Images", on_delete=models.CASCADE, null=True)
+        Property, related_name="Image", help_text="Property Images",
+        on_delete=models.CASCADE, null=True)
 
     url = models.URLField("url", max_length=200)
     alt = models.CharField("alt", max_length=20)
