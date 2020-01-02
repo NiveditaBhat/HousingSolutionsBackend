@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'graphene_django',
     'django_countries',
     'phone_field',
     'common',
@@ -55,7 +56,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'HousingSolutionsAPI.urls'
+
+GRAPHENE = {
+    'graphql.schema.schema'
+}
 
 TEMPLATES = [
     {
