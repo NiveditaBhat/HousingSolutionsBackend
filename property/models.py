@@ -1,7 +1,8 @@
-from django.db import models
-from django.core.validators import MinValueValidator
 from datetime import date
+
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
+from django.db import models
 
 
 def validate_availability(value):

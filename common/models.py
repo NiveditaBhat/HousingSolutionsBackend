@@ -1,9 +1,10 @@
-from django.db import models
-from property.models import Property
-from customer.models import Customer
 from django.core.exceptions import ValidationError
-from django_countries.fields import CountryField
+from django.db import models
 from django_countries import Countries
+from django_countries.fields import CountryField
+
+from customer.models import Customer
+from property.models import Property
 
 
 class Name(models.Model):

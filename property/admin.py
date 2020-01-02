@@ -1,7 +1,8 @@
 from django.contrib import admin
+from django.utils.html import mark_safe
+
 from common.models import Address, Image
 from property.models import Property, PropertyPrice
-from django.utils.html import mark_safe
 
 
 class AddressInline(admin.StackedInline):
