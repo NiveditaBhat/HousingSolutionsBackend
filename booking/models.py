@@ -5,10 +5,10 @@ from property.models import Property
 
 
 class Booking(models.Model):
-    property = models.ForeignKey(
+    property = models.OneToOneField(
         Property, related_name="booking", help_text="Property",
         on_delete=models.CASCADE, null=True)
-    customer = models.OneToOneField(
+    customer = models.ForeignKey(
         Customer, related_name="booking", help_text="Customer",
         on_delete=models.CASCADE, null=True)
 
