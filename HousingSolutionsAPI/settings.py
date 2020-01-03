@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'common',
     'property',
     'customer',
-    'booking'
+    'booking',
+    'graphqlAPI'
 ]
 
 MIDDLEWARE = [
@@ -59,9 +60,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'HousingSolutionsAPI.urls'
 
-GRAPHENE = {
-    'graphql.schema.schema'
-}
 
 TEMPLATES = [
     {
