@@ -1,9 +1,9 @@
 import graphene
-from django.db.models import Q
 from graphene_django.types import DjangoObjectType
 
-from common.models import Address, Image
 from property.models import Property, PropertyPrice
+from common.models import Address, Image
+from django.db.models import Q
 
 
 class PropertyPrice(DjangoObjectType):
@@ -48,7 +48,7 @@ class PropertyQuery(graphene.ObjectType):
                      "bedroom": Q(bedroom__icontains=params.bedroom),
                      "city": Q(address__city__iexact=params.city),
                      "country": Q(address__country__iexact=params.country),
-                     "rent": Q(property_price__rent__lte=params.rent)
+                     "rent": Q(property_ price__rent__lte=params.rent)
                      }
             filter = ()
             for k, v in query.items():
