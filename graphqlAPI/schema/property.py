@@ -43,6 +43,10 @@ class PropertyQuery(graphene.ObjectType):
         return Property.objects.all()
 
     def resolve_search_properties(self, info, params=None, **kwargs):
+        """
+        Search properties by parameters - interior, bedroom, price, city, 
+        country and rent
+        """
         if params:
             query = {"interior": Q(interior__iexact=params.interior),
                      "bedroom": Q(bedroom__icontains=params.bedroom),
