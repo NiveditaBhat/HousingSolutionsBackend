@@ -1,4 +1,5 @@
 from graphene import Field, ObjectType, Schema
+
 from .property import PropertyQuery
 
 
