@@ -36,11 +36,15 @@ class SearchInput(graphene.InputObjectType):
 
 class PropertyQuery(graphene.ObjectType):
     all_properties = graphene.List(PropertyType)
+    property = graphene.Field(PropertyType, property_id=graphene.String())
     search_properties = graphene.List(
         PropertyType, params=SearchInput())
 
     def resolve_all_properties(self, info, **kwargs):
         return Property.objects.all()
+
+    def resolve_property(self, info, property_id):
+        return Property.objects.get(id=property_id)
 
     def resolve_search_properties(self, info, params=None, **kwargs):
         """
