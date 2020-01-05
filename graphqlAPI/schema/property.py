@@ -34,11 +34,23 @@ class SearchInput(graphene.InputObjectType):
     rent = graphene.Float(required=False)
 
 
+class SortByFields(graphene.Enum):
+    price = "property_price__rent"
+    availability = "availability"
+
+
+class SortOrder(graphene.Enum):
+    ASC = 1
+    DSC = 2
+
+
 class PropertyQuery(graphene.ObjectType):
     all_properties = graphene.List(PropertyType)
     property = graphene.Field(PropertyType, property_id=graphene.String())
     search_properties = graphene.List(
         PropertyType, params=SearchInput())
+    sort_properties = graphene.List(
+        PropertyType, param=SortByFields(), order=SortOrder())
 
     def resolve_all_properties(self, info, **kwargs):
         return Property.objects.all()
@@ -68,3 +80,13 @@ class PropertyQuery(graphene.ObjectType):
             return Property.objects.filter(filter)
 
         return Property.objects.all()
+
+    def resolve_sort_properties(self, info, param="availability", order=1, **kwargs):
+        """
+        Sort properties by parameters - availability or price
+        order - ascending or descending
+        """
+        if param:
+            if order == 2:
+                param = '-'+param
+            return Property.objects.all().order_by(param)
