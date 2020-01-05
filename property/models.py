@@ -28,7 +28,7 @@ class Property(models.Model):
     availability = models.DateField(
         help_text="Date from which the property is available for rent",
         validators=[validate_availability])
-    catergory = models.CharField(
+    category = models.CharField(
         max_length=20,
         help_text="Property Type",
         choices=(
