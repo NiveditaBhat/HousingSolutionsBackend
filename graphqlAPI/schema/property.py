@@ -6,6 +6,18 @@ from common.models import Address, Image
 from django.db.models import Q
 
 
+def sort_properties(results, param, order):
+    """
+    Sort properties by parameters - availability or price
+    order - ascending or descending
+    """
+    if param:
+        if order == 2:
+            param = '-'+param
+
+        return results.order_by(param)
+
+
 class PropertyPrice(DjangoObjectType):
     class Meta:
         model = PropertyPrice
@@ -32,6 +44,7 @@ class SearchInput(graphene.InputObjectType):
     city = graphene.String(required=False)
     country = graphene.String(required=False)
     rent = graphene.Float(required=False)
+    category = graphene.String(required=False)
 
 
 class SortByFields(graphene.Enum):
@@ -48,9 +61,9 @@ class PropertyQuery(graphene.ObjectType):
     all_properties = graphene.List(PropertyType)
     property = graphene.Field(PropertyType, property_id=graphene.String())
     search_properties = graphene.List(
-        PropertyType, params=SearchInput())
-    sort_properties = graphene.List(
-        PropertyType, param=SortByFields(), order=SortOrder())
+        PropertyType, filter_params=SearchInput(),
+        sort_params=SortByFields(),
+        order=SortOrder())
 
     def resolve_all_properties(self, info, **kwargs):
         return Property.objects.all()
@@ -58,35 +71,34 @@ class PropertyQuery(graphene.ObjectType):
     def resolve_property(self, info, property_id):
         return Property.objects.get(id=property_id)
 
-    def resolve_search_properties(self, info, params=None, **kwargs):
+    def resolve_search_properties(self, info, filter_params=None,
+                                  sort_params="availability",
+                                  order=1, **kwargs):
         """
-        Search properties by parameters - interior, bedroom, price, city, 
+        Search properties by parameters - interior, bedroom, price, city,
         country and rent
+        Sort by price or availability
         """
-        if params:
-            query = {"interior": Q(interior__iexact=params.interior),
-                     "bedroom": Q(bedroom__icontains=params.bedroom),
-                     "city": Q(address__city__iexact=params.city),
-                     "country": Q(address__country__iexact=params.country),
-                     "rent": Q(property_price__rent__lte=params.rent)
+        if filter_params:
+            query = {"interior": Q(interior__iexact=filter_params.interior),
+                     "bedroom": Q(bedroom__icontains=filter_params.bedroom),
+                     "city": Q(address__city__iexact=filter_params.city),
+                     "country": Q(address__country__iexact=filter_params.country),
+                     "rent": Q(property_price__rent__lte=filter_params.rent),
+                     "category": Q(category__iexact=filter_params.category)
                      }
+
             filter = ()
             for k, v in query.items():
-                if k in params:
+                if k in filter_params:
                     if len(filter) == 0:
                         filter = v
                     else:
                         filter = v & filter
-            return Property.objects.filter(filter)
+
+            search_results = Property.objects.filter(filter)
+            sorted_results = sort_properties(
+                search_results, sort_params, order)
+            return sorted_results
 
         return Property.objects.all()
-
-    def resolve_sort_properties(self, info, param="availability", order=1, **kwargs):
-        """
-        Sort properties by parameters - availability or price
-        order - ascending or descending
-        """
-        if param:
-            if order == 2:
-                param = '-'+param
-            return Property.objects.all().order_by(param)
