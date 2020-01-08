@@ -1,9 +1,10 @@
-import graphene
-from graphene_django.types import DjangoObjectType
 
-from property.models import Property, PropertyPrice
-from common.models import Address, Image
+import graphene
 from django.db.models import Q
+from graphene_django import DjangoObjectType
+
+from common.models import Address, Image
+from property.models import Property, PropertyPrice
 
 
 def sort_properties(results, param, order):
