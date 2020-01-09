@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from common.models import Address, Name
+from common.models import Address
 
 from .models import Customer
 
@@ -10,10 +10,7 @@ class AddressInline(admin.StackedInline):
     fields = ['street', 'city', 'country', 'zip_code']
 
 
-class NameInline(admin.StackedInline):
-    model = Name
-
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    inlines = [NameInline, AddressInline]
+    inlines = [AddressInline]

@@ -8,9 +8,6 @@ from property.models import Property
 
 
 class Name(models.Model):
-    customer = models.OneToOneField(
-        Customer, related_name="Name", help_text="Customer",
-        on_delete=models.CASCADE, null=True)
     first_name = models.CharField(
         max_length=20,
         help_text="First Name"
