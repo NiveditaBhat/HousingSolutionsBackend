@@ -43,13 +43,14 @@ class CreateUser(graphene.Mutation):
                                 last_name=user_data.last_name)
         user.set_password(user_data.password)
         user.save()
-        address = Address(street=user_data.street,
+        customer = Customer(user=user, phone=user_data.phone)
+        customer.save()
+        address = Address(customer=customer, 
+                          street=user_data.street,
                           city=user_data.city,
                           country=user_data.country,
                           zip_code=user_data.zip_code)
         address.save()
-        customer = Customer(user=user, phone=user_data.phone,
-                            address=address)
 
         return CreateUser(user=customer)
 
@@ -59,3 +60,14 @@ class CustomerMutation(graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
+
+
+class CustomerQuery(graphene.ObjectType):
+    customer = graphene.Field(CustomerType)
+
+    def resolve_customer(self, info):
+        if info.context.user.is_authenticated:
+            return Customer.objects.get(user=info.context.user)
+        return None
+
+

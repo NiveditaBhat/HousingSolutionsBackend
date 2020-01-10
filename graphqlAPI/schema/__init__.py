@@ -1,6 +1,6 @@
 from graphene import Field, ObjectType, Schema
 
-from .customer import CustomerMutation
+from .customer import CustomerMutation, CustomerQuery
 from .property import PropertyQuery
 
 
@@ -16,6 +16,7 @@ class Query(ObjectType):
     Root query which includes all queries from other modules
     """
     property = Field(PropertyQuery, resolver=resolve_self)
+    customer = Field(CustomerQuery, resolver=resolve_self)
 
 
 class Mutation(ObjectType):
