@@ -1,7 +1,7 @@
 from graphene import Field, ObjectType, Schema
 
-from .property import PropertyQuery
 from .customer import CustomerMutation
+from .property import PropertyQuery
 
 
 def resolve_self(_, info):
