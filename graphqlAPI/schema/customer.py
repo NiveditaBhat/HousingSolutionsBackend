@@ -5,6 +5,7 @@ from graphene_django import DjangoObjectType
 
 from common.models import Address
 from customer.models import Customer
+from booking.models import Booking
 
 
 class CustomerInput(graphene.InputObjectType):
@@ -28,6 +29,12 @@ class UserType(DjangoObjectType):
 class CustomerType(DjangoObjectType):
     class Meta:
         model = Customer
+
+
+class CustomerBookingType(DjangoObjectType):
+    class Meta:
+        model = Booking
+
 
 
 class CreateUser(graphene.Mutation):
@@ -64,10 +71,14 @@ class CustomerMutation(graphene.ObjectType):
 
 class CustomerQuery(graphene.ObjectType):
     customer = graphene.Field(CustomerType)
+    all_bookings = graphene.List(CustomerBookingType)
 
     def resolve_customer(self, info):
         if info.context.user.is_authenticated:
             return Customer.objects.get(user=info.context.user)
         return None
 
-
+    def resolve_all_bookings(self,info):
+        if info.context.user.is_authenticated:
+            customer = Customer.objects.get(user=info.context.user)
+            return Booking.objects.get(customer=customer)
