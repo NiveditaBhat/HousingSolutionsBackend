@@ -2,6 +2,7 @@ from graphene import Field, ObjectType, Schema
 
 from .customer import CustomerMutation, CustomerQuery
 from .property import PropertyQuery
+from .booking import BookingMutation
 
 
 def resolve_self(_, info):
@@ -24,6 +25,7 @@ class Mutation(ObjectType):
     Root mutation which includes all mutations from other modules
     """
     customer = Field(CustomerMutation, resolver=resolve_self)
+    booking = Field(BookingMutation, resolver=resolve_self)
 
 
 schema = Schema(query=Query, mutation=Mutation)
