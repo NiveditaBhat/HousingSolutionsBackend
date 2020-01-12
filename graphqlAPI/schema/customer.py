@@ -78,7 +78,7 @@ class CustomerQuery(graphene.ObjectType):
             return Customer.objects.get(user=info.context.user)
         return None
 
-    def resolve_all_bookings(self,info):
+    def resolve_all_bookings(self, info):
         if info.context.user.is_authenticated:
             customer = Customer.objects.get(user=info.context.user)
             return Booking.objects.get(customer=customer)
