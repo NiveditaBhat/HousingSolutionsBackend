@@ -48,7 +48,7 @@ class Address(models.Model):
         help_text="Postal code", max_length=12, default="5611KT")
 
     class Meta:
-        verbose_name = 'Property Address'
+        verbose_name = 'Address'
 
 
 class Image(models.Model):
