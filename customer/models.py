@@ -11,4 +11,5 @@ class Customer(models.Model):
         verbose_name_plural = 'Customers registered under HousingSolutions'
 
     def __str__(self):
-        return "Customer {id}".format(id=self.id)
+        return "Customer {id} : {user}".format(id=self.id,
+                                               user=self.user.username)
