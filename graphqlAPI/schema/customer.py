@@ -3,9 +3,9 @@ import graphql_jwt
 from django.contrib.auth import get_user_model
 from graphene_django import DjangoObjectType
 
+from booking.models import Booking
 from common.models import Address
 from customer.models import Customer
-from booking.models import Booking
 
 
 class CustomerInput(graphene.InputObjectType):
@@ -81,4 +81,5 @@ class CustomerQuery(graphene.ObjectType):
     def resolve_all_bookings(self, info):
         if info.context.user.is_authenticated:
             customer = Customer.objects.get(user=info.context.user)
-            return Booking.objects.get(customer=customer)
+            return Booking.objects.filter(customer=customer)
+
