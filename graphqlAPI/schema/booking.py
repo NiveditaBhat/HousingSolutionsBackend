@@ -25,13 +25,11 @@ class CreateBooking(graphene.Mutation):
     
     def mutate(self, info, booking_data):
         if info.context.user.is_authenticated:
-            property = Property.objects.get(id=booking_data.property_id)
-            booking = Booking(property=property,
-                            message=booking_data.booking_message)
-            booking.save()
             customer = Customer.objects.get(id=booking_data.customer_id)
-            customer.booking = booking
-            customer.save()
+            property = Property.objects.get(id=booking_data.property_id)
+            booking = Booking(property=property, customer=customer,
+                              message=booking_data.booking_message)
+            booking.save()
             return CreateBooking(booking=booking)
 
 

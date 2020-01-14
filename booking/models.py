@@ -1,9 +1,13 @@
 from django.db import models
 
 from property.models import Property
+from customer.models import Customer
 
 
 class Booking(models.Model):
+    customer = models.ForeignKey(Customer, null=True, blank=True,
+                                 on_delete=models.SET_NULL,
+                                 help_text='customer')
     property = models.OneToOneField(
         Property, related_name="booking", help_text="Property",
         on_delete=models.CASCADE, null=True)
