@@ -32,6 +32,23 @@ class CreateBooking(graphene.Mutation):
             booking.save()
             return CreateBooking(booking=booking)
 
+    
+class CancelBooking(graphene.Mutation):
+    booking = graphene.Field(BookingType)
+
+    class Arguments:
+        booking_id = graphene.String(required=True)
+        customer_id = graphene.String(required=True)
+    
+    def mutate(self, info, booking_id, customer_id):
+        if info.context.user.is_authenticated:
+            customer = Customer.objects.get(id=customer_id)
+            booking = Booking.objects.get(id=booking_id,
+                                          customer=customer)
+            booking.delete()
+            return CancelBooking(booking=booking)
+
 
 class BookingMutation(graphene.ObjectType):
     create_booking = CreateBooking.Field()
+    cancel_booking = CancelBooking.Field()
