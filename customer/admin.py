@@ -8,13 +8,16 @@ from booking.models import Booking
 
 class BookingInline(admin.StackedInline):
     model = Booking
+    readonly_fields = ['message']
 
 
 class AddressInline(admin.StackedInline):
     model = Address
-    fields = ['street', 'city', 'country', 'zip_code']
+    exclude = ['property']
+    readonly_fields = ['street', 'city', 'country', 'zip_code']
 
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    inlines = [BookingInline, AddressInline]
+    readonly_fields = ['phone']
+    inlines = [AddressInline, BookingInline]
