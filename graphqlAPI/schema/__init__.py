@@ -1,9 +1,8 @@
 from graphene import Field, ObjectType, Schema
 
+from .booking import BookingMutation
 from .customer import CustomerMutation, CustomerQuery
 from .property import PropertyQuery
-from .booking import BookingMutation
-
 
 def resolve_self(_, info):
     """
