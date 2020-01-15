@@ -2,6 +2,7 @@
 import graphene
 from django.db.models import Q
 from graphene_django import DjangoObjectType
+from graphql import GraphQLError
 
 from common.models import Address, Image
 from property.models import Property, PropertyPrice
@@ -67,10 +68,16 @@ class PropertyQuery(graphene.ObjectType):
         order=SortOrder())
 
     def resolve_all_properties(self, info, **kwargs):
-        return Property.objects.all()
+        try:
+            return Property.objects.all()
+        except Property.DoesNotExist:
+            return None
 
     def resolve_property(self, info, property_id):
-        return Property.objects.get(id=property_id)
+        try:
+            return Property.objects.get(id=property_id)
+        except Property.DoesNotExist:
+            raise GraphQLError('Unable to retrive property with id {id}'.format(id=property_id))
 
     def resolve_search_properties(self, info, filter_params=None,
                                   sort_params="availability",
@@ -79,15 +86,15 @@ class PropertyQuery(graphene.ObjectType):
         Search properties by parameters - interior, bedroom, price, city,
         country and rent
         Sort by price or availability
-        """
+        """     
         if filter_params:
             query = {"interior": Q(interior__iexact=filter_params.interior),
-                     "bedroom": Q(bedroom__icontains=filter_params.bedroom),
-                     "city": Q(address__city__iexact=filter_params.city),
-                     "country": Q(address__country__iexact=filter_params.country),
-                     "rent": Q(property_price__rent__lte=filter_params.rent),
-                     "category": Q(category__iexact=filter_params.category)
-                     }
+                        "bedroom": Q(bedroom__icontains=filter_params.bedroom),
+                        "city": Q(address__city__iexact=filter_params.city),
+                        "country": Q(address__country__iexact=filter_params.country),
+                        "rent": Q(property_price__rent__lte=filter_params.rent),
+                        "category": Q(category__iexact=filter_params.category)
+                        }
 
             filter = ()
             for k, v in query.items():
