@@ -1,6 +1,7 @@
 import graphene
 import graphql_jwt
 from django.contrib.auth import get_user_model
+from graphql import GraphQLError
 from graphene_django import DjangoObjectType
 
 from booking.models import Booking
@@ -34,7 +35,6 @@ class CustomerType(DjangoObjectType):
 class CustomerBookingType(DjangoObjectType):
     class Meta:
         model = Booking
-
 
 
 class CreateUser(graphene.Mutation):
@@ -72,14 +72,29 @@ class CustomerMutation(graphene.ObjectType):
 class CustomerQuery(graphene.ObjectType):
     customer = graphene.Field(CustomerType)
     all_bookings = graphene.List(CustomerBookingType)
+    booking = graphene.Field(CustomerBookingType, booking_id=graphene.String())
 
     def resolve_customer(self, info):
-        if info.context.user.is_authenticated:
-            return Customer.objects.get(user=info.context.user)
-        return None
+        if info.context.user.is_anonymous:
+            raise GraphQLError('User not authenticated')
+        return Customer.objects.get(user=info.context.user)
+      
 
     def resolve_all_bookings(self, info):
-        if info.context.user.is_authenticated:
+        if info.context.user.is_anonymous:
+            raise GraphQLError('User not authenticated')
+        try:
             customer = Customer.objects.get(user=info.context.user)
             return Booking.objects.filter(customer=customer)
+        except Booking.DoesNotExist:
+            return None
+            
 
+    def resolve_booking(self, info, booking_id):
+        if info.context.user.is_anonymous:
+            raise GraphQLError('User not authenticated')
+        try:
+            customer = Customer.objects.get(user=info.context.user)
+            return Booking.objects.get(customer=customer, id=booking_id)
+        except Booking.DoesNotExist:
+            raise GraphQLError('Unable to retrive booking with id booking_{id}'.format(id=booking_id))
