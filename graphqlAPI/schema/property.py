@@ -20,6 +20,14 @@ def sort_properties(results, param, order):
         return results.order_by(param)
 
 
+def paginateQuerySet(querySet, offset=0, limit=6):
+    if offset:
+        querySet = querySet[offset:]
+    if limit is not None:
+        querySet = querySet[:limit]
+    return querySet
+
+
 class PropertyPrice(DjangoObjectType):
     class Meta:
         model = PropertyPrice
@@ -60,41 +68,36 @@ class SortOrder(graphene.Enum):
 
 
 class PropertyQuery(graphene.ObjectType):
-    all_properties = graphene.List(PropertyType)
     property = graphene.Field(PropertyType, property_id=graphene.String())
     search_properties = graphene.List(
         PropertyType, filter_params=SearchInput(),
         sort_params=SortByFields(),
-        order=SortOrder())
-
-    def resolve_all_properties(self, info, **kwargs):
-        try:
-            return Property.objects.all()
-        except Property.DoesNotExist:
-            return None
+        order=SortOrder(), offset=graphene.Int(), limit=graphene.Int())
 
     def resolve_property(self, info, property_id):
         try:
             return Property.objects.get(id=property_id)
         except Property.DoesNotExist:
-            raise GraphQLError('Unable to retrive property with id {id}'.format(id=property_id))
+            raise GraphQLError(
+                'Unable to retrive property with id {id}'.format(id=property_id))
 
     def resolve_search_properties(self, info, filter_params=None,
                                   sort_params="availability",
-                                  order=1, **kwargs):
+                                  order=1, offset=0, limit=6, **kwargs):
         """
         Search properties by parameters - interior, bedroom, price, city,
         country and rent
         Sort by price or availability
-        """     
+        """
+        qs = []
         if filter_params:
             query = {"interior": Q(interior__iexact=filter_params.interior),
-                        "bedroom": Q(bedroom__icontains=filter_params.bedroom),
-                        "city": Q(address__city__iexact=filter_params.city),
-                        "country": Q(address__country__iexact=filter_params.country),
-                        "rent": Q(property_price__rent__lte=filter_params.rent),
-                        "category": Q(category__iexact=filter_params.category)
-                        }
+                     "bedroom": Q(bedroom__icontains=filter_params.bedroom),
+                     "city": Q(address__city__iexact=filter_params.city),
+                     "country": Q(address__country__iexact=filter_params.country),
+                     "rent": Q(property_price__rent__lte=filter_params.rent),
+                     "category": Q(category__iexact=filter_params.category)
+                     }
 
             filter = ()
             for k, v in query.items():
@@ -105,8 +108,9 @@ class PropertyQuery(graphene.ObjectType):
                         filter = v & filter
 
             search_results = Property.objects.filter(filter)
-            sorted_results = sort_properties(
+            qs = sort_properties(
                 search_results, sort_params, order)
-            return sorted_results
+        else:
+            qs = Property.objects.all()
 
-        return Property.objects.all()
+        return paginateQuerySet(qs, offset, limit)
