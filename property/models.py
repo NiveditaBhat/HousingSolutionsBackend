@@ -49,6 +49,10 @@ class Property(models.Model):
         ),
         default='unfurnished'
     )
+    latitude = models.DecimalField(
+        max_digits=9, decimal_places=6, help_text="Property Address - latitude", default="51.4416")
+    longitude = models.DecimalField(
+        max_digits=9, decimal_places=6, help_text="Property Address - longitude", default="5.4697")
 
     class Meta:
         verbose_name_plural = 'Properties under HousingSolutions'
