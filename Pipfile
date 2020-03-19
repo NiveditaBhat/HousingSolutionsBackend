@@ -13,6 +13,10 @@ psycopg2-binary = "*"
 django-countries = "*"
 django-phone-field = "*"
 isort = "*"
+graphene-django = ">=2.0"
+django-graphql-jwt = "*"
+django-cors-headers = "*"
 
 [requires]
 python_version = "3.7"
+
