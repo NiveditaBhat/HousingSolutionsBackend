@@ -68,11 +68,18 @@ class SortOrder(graphene.Enum):
 
 
 class PropertyQuery(graphene.ObjectType):
+    totalProperties = graphene.Int()
     property = graphene.Field(PropertyType, property_id=graphene.String())
     search_properties = graphene.List(
         PropertyType, filter_params=SearchInput(),
         sort_params=SortByFields(),
         order=SortOrder(), offset=graphene.Int(), limit=graphene.Int())
+
+    def resolve_totalProperties(self, info):
+        try:
+            return Property.objects.all().count()
+        except Property.DoesNotExist:
+            raise GraphQLError('Unable to retrive total no of properties')
 
     def resolve_property(self, info, property_id):
         try:
