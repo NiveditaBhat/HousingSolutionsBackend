@@ -8,6 +8,31 @@ from common.models import Address, Image
 from property.models import Property, PropertyPrice
 
 
+def search_properties(filter_params):
+    qs = []
+    if filter_params:
+        query = {"interior": Q(interior__iexact=filter_params.interior),
+                 "bedroom": Q(bedroom__icontains=filter_params.bedroom),
+                 "city": Q(address__city__iexact=filter_params.city),
+                 "country": Q(address__country__iexact=filter_params.country),
+                 "rent": Q(property_price__rent__lte=filter_params.rent),
+                 "category": Q(category__iexact=filter_params.category)
+                 }
+
+        filter = ()
+        for k, v in query.items():
+            if k in filter_params:
+                if len(filter) == 0:
+                    filter = v
+                else:
+                    filter = v & filter
+
+        qs = Property.objects.filter(filter)
+    else:
+        qs = Property.objects.all()
+    return qs
+
+
 def sort_properties(results, param, order):
     """
     Sort properties by parameters - availability or price
@@ -68,16 +93,16 @@ class SortOrder(graphene.Enum):
 
 
 class PropertyQuery(graphene.ObjectType):
-    totalProperties = graphene.Int()
+    totalProperties = graphene.Int(filter_params=SearchInput())
     property = graphene.Field(PropertyType, property_id=graphene.String())
     search_properties = graphene.List(
         PropertyType, filter_params=SearchInput(),
         sort_params=SortByFields(),
         order=SortOrder(), offset=graphene.Int(), limit=graphene.Int())
 
-    def resolve_totalProperties(self, info):
+    def resolve_totalProperties(self, info, filter_params=None,):
         try:
-            return Property.objects.all().count()
+            return search_properties(filter_params).count()
         except Property.DoesNotExist:
             raise GraphQLError('Unable to retrive total no of properties')
 
@@ -96,28 +121,9 @@ class PropertyQuery(graphene.ObjectType):
         country and rent
         Sort by price or availability
         """
-        qs = []
-        if filter_params:
-            query = {"interior": Q(interior__iexact=filter_params.interior),
-                     "bedroom": Q(bedroom__icontains=filter_params.bedroom),
-                     "city": Q(address__city__iexact=filter_params.city),
-                     "country": Q(address__country__iexact=filter_params.country),
-                     "rent": Q(property_price__rent__lte=filter_params.rent),
-                     "category": Q(category__iexact=filter_params.category)
-                     }
 
-            filter = ()
-            for k, v in query.items():
-                if k in filter_params:
-                    if len(filter) == 0:
-                        filter = v
-                    else:
-                        filter = v & filter
-
-            search_results = Property.objects.filter(filter)
-            qs = sort_properties(
-                search_results, sort_params, order)
-        else:
-            qs = Property.objects.all()
+        search_results = search_properties(filter_params)
+        qs = sort_properties(
+            search_results, sort_params, order)
 
         return paginateQuerySet(qs, offset, limit)
