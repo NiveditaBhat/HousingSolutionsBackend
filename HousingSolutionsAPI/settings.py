@@ -25,7 +25,7 @@ SECRET_KEY = '%ee+5xf=g2-767$#cc@bqp++7&f5_th9mreloc*h85ba-o7m^g'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '.elasticbeanstalk.com']
 
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000"
@@ -71,7 +71,7 @@ ROOT_URLCONF = 'HousingSolutionsAPI.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'HousingSolutionsAPI/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,22 +84,39 @@ TEMPLATES = [
     },
 ]
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'HousingSolutionsAPI/static'),
+]
+
 WSGI_APPLICATION = 'HousingSolutionsAPI.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'housingsolutions',
-        'USER': 'neetu',
-        'PASSWORD': 'youareenough',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+if 'RDS_DB_NAME' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': '[LOCAL_DATABASE_NAME]',
+            'USER': '[LOCAL_DATABASE_USER]',
+            'PASSWORD': '[LOCAL_DATABASE_PASSWORD]',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
+
 
 
 # Password validation
@@ -147,5 +164,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
+STATIC_ROOT = os.path.join(BASE_DIR, "..", "www", "static")
 
 STATIC_URL = '/static/'
+
+AWS_STORAGE_BUCKET_NAME = 'housingsolutions'
+MEDIA_URL = 'http://%s.s3.amazonaws.com/uploads/' % AWS_STORAGE_BUCKET_NAME
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto.S3BotoStorage"
