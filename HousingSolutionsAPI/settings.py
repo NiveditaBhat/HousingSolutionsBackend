@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost', '.elasticbeanstalk.com']
 
 CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000"
+    "http://localhost:3000", "http://housingsolutions.s3-website.eu-west-2.amazonaws.com"
 ]
 
 # Application definition
