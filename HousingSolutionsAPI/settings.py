@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost', '.elasticbeanstalk.com']
 
 CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000", "http://housingsolutions.s3-website.eu-west-2.amazonaws.com"
+    "http://localhost:3000", "http://housingsolutions.nvbht.com"
 ]
 
 # Application definition
@@ -116,7 +116,6 @@ else:
             'PORT': '5432',
         }
     }
-
 
 
 # Password validation
